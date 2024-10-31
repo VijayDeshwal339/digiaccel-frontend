@@ -8,11 +8,17 @@ import TaskList from './TaskList';
 import Notif from '../assests/Notif.png';
 import Setting from '../assests/Setting.png';
 import WeeklyCalendar from './WeeklyCalendar';
+import { useSelector } from 'react-redux';
 
 const Home = () => {
+  const { tasks, loading, error } = useSelector((state) => state.tasks);
   const [showAddTask, setShowAddTask] = useState(false);
   const [showEditTask, setShowEditTask] = useState(false);
   const [edittaskid, setEditTaskid] = useState('');
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter(task => task.status === 'true').length;
+
+  const completedPercentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
 
   const toggleAddTask = () => {
     setShowAddTask((prev) => !prev);
@@ -26,7 +32,8 @@ const Home = () => {
   };
 
   return (
-    <div className='w-[390px] flex flex-col px-[26px] py-7 relative'>
+    // <div className='sm:flex sm:items-center sm:justify-center'>
+    <div className='w-[390px] sm:mx-auto flex flex-col px-[26px] py-7 relative'>
       {/* Search and Notification icons */}
       { showAddTask || showEditTask ?  (
       <>
@@ -61,7 +68,7 @@ const Home = () => {
             <p className='font-poppins font-normal text-xs leading-7'>Task Complete</p>
           </div>
           <p className='ml-[39px] font-poppins text-[22px] leading-[33px]'>
-            50 <span className='text-[10px] leading-[15px] text-[#6E7180]'>This Week</span>
+          {tasks.filter(task => task.status === 'true').length} <span className='text-[10px] leading-[15px] text-[#6E7180]'>This Week</span>
           </p>
         </div>
         {/* Pending Task */}
@@ -73,9 +80,17 @@ const Home = () => {
             <p className='font-poppins font-normal text-xs leading-7'>Task Pending</p>
           </div>
           <p className='ml-[39px] font-poppins text-[22px] leading-[33px]'>
-            50 <span className='text-[10px] leading-[15px] text-[#6E7180]'>This Week</span>
+          {tasks.filter(task => task.status === 'false').length} <span className='text-[10px] leading-[15px] text-[#6E7180]'>This Week</span>
           </p>
         </div>
+      </div>
+
+      {/* Weekely Progress */}
+      <div className='flex flex-col gap-2 mt-[20px]'>
+      <p className='font-poppins font-semibold text-lg leading-[27px]'>Weekly Progress</p>
+      <div className='flex bg-[#DADAFF] w-[342px] h-[24px]'>
+        <div className=' bg-[#253C98]' style={{ width: `${completedPercentage}%` }} ></div>
+      </div>
       </div>
 
       {/* Task List */}
@@ -91,17 +106,17 @@ const Home = () => {
 
       {/* AddNewTask Component */}
       {(showAddTask || showEditTask) && (
-        <div className='fixed inset-x-0 bottom-0 bg-white shadow-lg rounded-t-lg transition-transform transform translate-y-full animate-slide-up'>
+        <div className='fixed xs:inset-x-0  sm:inset-x-auto  bottom-0 bg-white shadow-lg rounded-t-lg transition-transform transform translate-y-full animate-slide-up'>
           <AddNewTask
-            closeTask={toggleAddTask} // Call to close the add task
+            closeTask={toggleAddTask} 
             edittaskid={showEditTask ? edittaskid : ''}
             closeEditTask={() => setShowEditTask(false)}
           />
         </div>
       )}
     </div>
+    // </div>
   );
 };
 
 export default Home;
-
