@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.day {
+  width: 39px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+  color: #C0C0C0; 
+}
+
+
+.selected {
+  background-color: #4566EC; 
+  color: white; 
+  border-radius: 5px;
+}
+
