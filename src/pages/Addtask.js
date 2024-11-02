@@ -3,6 +3,7 @@ import Plus1 from '../assests/Plus1.png';
 import { useDispatch } from 'react-redux';
 import { addTask, updateTask } from '../features/slice/taskSlice';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const AddNewTask = ({ closeEditTask, edittaskid, closeTask }) => {
   const [tasks, setTasks] = useState();
@@ -10,7 +11,7 @@ const AddNewTask = ({ closeEditTask, edittaskid, closeTask }) => {
 
   const fetchTaskbyid = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/tasks/${edittaskid}`);
+      const response = await axios.get(`https://digiaccel-backend-1v9h.onrender.com/api/tasks/${edittaskid}`);
       setTasks(response.data);
     } catch (error) {
       console.error("Error:", error);
@@ -37,7 +38,7 @@ const AddNewTask = ({ closeEditTask, edittaskid, closeTask }) => {
       setTaskTitle(tasks.title || '');
       setStartTime(tasks.startTime || '');
       setEndTime(tasks.endTime || '');
-      setDate(tasks.date ? tasks.date.split('T')[0] : ''); // Extract date in 'yyyy-MM-dd' format
+      setDate(tasks.date ? tasks.date.split('T')[0] : ''); 
       setDescription(tasks.description || '');
       setPriority(tasks.priority || 'Low');
     }
@@ -62,8 +63,10 @@ const AddNewTask = ({ closeEditTask, edittaskid, closeTask }) => {
 
     if (isEdit) {
       dispatch(updateTask({ id: tasks._id, updatedTask: newTask }));
+      toast.success('Task Edit successfully');
     } else {
       dispatch(addTask(newTask));
+      toast.success('Task added successfully');
       closeTask(false);
     }
 

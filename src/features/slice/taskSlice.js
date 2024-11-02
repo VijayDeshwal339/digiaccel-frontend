@@ -89,12 +89,12 @@ const taskSlice = createSlice({
       })
       // Handle deleteTask
       .addCase(deleteTask.fulfilled, (state, action) => {
-        state.tasks = state.tasks.filter((task) => task._id !== action.payload); // Changed to _id
+        state.tasks = state.tasks.filter((task) => task._id !== action.payload); 
       })
      
       // Handle updateTask
       .addCase(updateTask.fulfilled, (state, action) => {
-        const index = state.tasks.findIndex((task) => task._id === action.payload._id); // Changed to _id
+        const index = state.tasks.findIndex((task) => task._id === action.payload._id); 
         if (index !== -1) {
           state.tasks[index] = action.payload;
         }
@@ -102,14 +102,14 @@ const taskSlice = createSlice({
       // Handle toggleTaskStatus
       .addCase(toggleTaskStatus.fulfilled, (state, action) => {
         const updatedTask = action.payload;
-        const index = state.tasks.findIndex((task) => task._id === updatedTask._id); // Changed to _id
+        const index = state.tasks.findIndex((task) => task._id === updatedTask._id); 
         if (index !== -1) {
-          state.tasks[index] = updatedTask; // Update the task
+          state.tasks[index] = updatedTask; 
         }
       })
       // Handle searchTasks
       .addCase(searchTasks.fulfilled, (state, action) => {
-        state.tasks = action.payload; // Update tasks with the search result
+        state.tasks = action.payload; 
       })
   },
 });
