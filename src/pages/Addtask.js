@@ -74,7 +74,7 @@ const AddNewTask = ({ closeEditTask, edittaskid, closeTask }) => {
   };
 
   return (
-    <div className="w-[390px] h-[640px] bg-white p-6 rounded-lg shadow-lg">
+    <div className="mx-auto w-[390px] h-[640px] bg-white p-6 rounded-lg shadow-lg">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold">{isEdit ? 'Update Task' : 'Create Task'}</h2>
         <img

@@ -9,17 +9,43 @@ import Notif from '../assests/Notif.png';
 import Setting from '../assests/Setting.png';
 import WeeklyCalendar from './WeeklyCalendar';
 import { useSelector } from 'react-redux';
+import TaskPopup from '../components/TaskPopup';
 
 const Home = () => {
   const { tasks, loading, error } = useSelector((state) => state.tasks);
   const [showAddTask, setShowAddTask] = useState(false);
   const [showEditTask, setShowEditTask] = useState(false);
   const [edittaskid, setEditTaskid] = useState('');
-  const [searchTerm, setSearchTerm] = useState(''); 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showPopup, setShowPopup] = useState(false);  
 
-  const totalTasks = tasks.length;
-  const completedTasks = tasks.filter((task) => task.status === 'true').length;
-  const completedPercentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+  
+  
+  // Function to get completed tasks for the current week
+  const getCurrentWeekTasksCount = () => {
+    const today = new Date();
+    const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(endOfWeek.getDate() + 7);
+  
+    const currentWeekTasks = tasks.filter((task) => {
+      const taskDate = new Date(task.date);
+      return taskDate >= startOfWeek && taskDate < endOfWeek;
+    });
+  
+    const completedTasksThisWeek = currentWeekTasks.filter((task) => task.status === 'true').length;
+    const notCompletedTasksThisWeek = currentWeekTasks.length - completedTasksThisWeek;
+  
+    return { completedTasksThisWeek, notCompletedTasksThisWeek };
+  };
+  
+  
+  
+  const { completedTasksThisWeek, notCompletedTasksThisWeek } = getCurrentWeekTasksCount();
+  const totalTasks = completedTasksThisWeek + notCompletedTasksThisWeek;
+  
+  const completedPercentage = totalTasks > 0 ? (completedTasksThisWeek / totalTasks) * 100 : 0;
+
 
   const toggleAddTask = () => {
     setShowAddTask((prev) => !prev);
@@ -37,33 +63,32 @@ const Home = () => {
     task.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const togglePopup = () => setShowPopup((prev) => !prev);
+
   return (
     <div className="w-[390px] sm:mx-auto flex flex-col px-[26px] py-7 relative">
-      
       {(showAddTask || showEditTask) ? (
-  <>
-    <div className="flex justify-between items-center h-[47px]">
-      <img src={Setting} alt="Settings" className="w-[24px] h-[24px]" />
-      <div className="flex items-center gap-2">
-        <img src={Search} alt="Search" className="w-[24px] h-[24px]" />
-        <img src={Notif} alt="Notifications" className="w-[24px] h-[24px]" />
-      </div>
-    </div>
-  </>
-) : (
-  <>
-    <input
-      type="text"
-      placeholder="Search for a task"
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      className='h-[47px] px-5 relative outline-none border border-[#E6E6E6] rounded-[4px] font-light text-xs leading-[18px] text-[#00000099]'
-    />
-      <img src={Search} alt='' className='w-[24px] h-[24px] absolute left-[327px] top-[40px]' />
-  </>
-)}
-
-      
+        <>
+          <div className="flex justify-between items-center h-[47px]">
+            <img src={Setting} alt="Settings" className="w-[24px] h-[24px]" />
+            <div className="flex items-center gap-2">
+              <img src={Search} alt="Search" className="w-[24px] h-[24px]" />
+              <img src={Notif} alt="Notifications" className="w-[24px] h-[24px]" />
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <input
+            type="text"
+            placeholder="Search for a task"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className='h-[47px] px-5 relative outline-none border border-[#E6E6E6] rounded-[4px] font-light text-xs leading-[18px] text-[#00000099]'
+          />
+          <img src={Search} alt='' className='w-[24px] h-[24px] absolute left-[327px] top-[40px]' />
+        </>
+      )}
 
       {/* Weekly Calendar */}
       <WeeklyCalendar />
@@ -71,7 +96,7 @@ const Home = () => {
       {/* Task Summary */}
       <div className="flex gap-4 mt-[30px]">
         {/* Completed Task */}
-        <div className="w-[162px] h-[96px] bg-[#EFF2FF] flex flex-col px-[13px] py-[18px]">
+        <div className="w-[162px] h-[96px] bg-[#EFF2FF] flex flex-col px-[13px] py-[18px]" onClick={togglePopup}>
           <div className="flex items-center gap-[11px]">
             <div className="w-[28px] h-[28px] flex items-center justify-center bg-[#99ADFF]">
               <img src={Complete} alt="Complete" className="w-[24px] h-[24px]" />
@@ -79,11 +104,11 @@ const Home = () => {
             <p className="font-poppins font-normal text-xs leading-7">Task Complete</p>
           </div>
           <p className="ml-[39px] font-poppins text-[22px] leading-[33px]">
-            {completedTasks} <span className="text-[10px] leading-[15px] text-[#6E7180]">This Week</span>
+            {completedTasksThisWeek} <span className="text-[10px] leading-[15px] text-[#6E7180]">Total</span>
           </p>
         </div>
         {/* Pending Task */}
-        <div className="w-[162px] h-[96px] bg-[#FFE6E7] flex flex-col px-[13px] py-[18px]">
+        <div className="w-[162px] h-[96px] bg-[#FFE6E7] flex flex-col px-[13px] py-[18px]" onClick={togglePopup}>
           <div className="flex items-center gap-[11px]">
             <div className="w-[28px] h-[28px] flex items-center justify-center bg-[#FFB1B5]">
               <img src={Cancel} alt="Pending" className="w-[24px] h-[24px]" />
@@ -91,10 +116,12 @@ const Home = () => {
             <p className="font-poppins font-normal text-xs leading-7">Task Pending</p>
           </div>
           <p className="ml-[39px] font-poppins text-[22px] leading-[33px]">
-            {tasks.filter(task => task.status === 'false').length} <span className="text-[10px] leading-[15px] text-[#6E7180]">This Week</span>
+            {notCompletedTasksThisWeek} <span className="text-[10px] leading-[15px] text-[#6E7180]">Total</span>
           </p>
         </div>
       </div>
+
+    
 
       {/* Weekly Progress */}
       <div className="flex flex-col gap-2 mt-[20px]">
@@ -117,13 +144,21 @@ const Home = () => {
 
       {/* AddNewTask Component */}
       {(showAddTask || showEditTask) && (
-        <div className="fixed bottom-0 bg-white shadow-lg rounded-t-lg transition-transform transform translate-y-full animate-slide-up">
+        <div className="fixed left-0 sm:right-0 bottom-0 bg-white shadow-lg rounded-t-lg transition-transform transform translate-y-full animate-slide-up">
           <AddNewTask
             closeTask={toggleAddTask}
             edittaskid={showEditTask ? edittaskid : ''}
             closeEditTask={() => setShowEditTask(false)}
           />
         </div>
+      )}
+
+      {/* Task Popup */}
+      {showPopup && (
+        <TaskPopup
+          tasks={filteredTasks}
+          closePopup={togglePopup}  
+        />
       )}
     </div>
   );
