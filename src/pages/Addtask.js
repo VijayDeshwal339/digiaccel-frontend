@@ -48,7 +48,7 @@ const AddNewTask = ({ closeEditTask, edittaskid, closeTask }) => {
     e.preventDefault();
 
     if (new Date(`${date}T${endTime}`) <= new Date(`${date}T${startTime}`)) {
-      alert("End time must be after start time");
+      toast.error("End time must be after start time");
       return;
     }
 
